@@ -1,8 +1,14 @@
 package nz.ac.wgtn.swen301.assignment1;
 
-import nz.ac.wgtn.swen301.studentdb.*;
+import nz.ac.wgtn.swen301.studentdb.Degree;
+import nz.ac.wgtn.swen301.studentdb.NoSuchRecordException;
+import nz.ac.wgtn.swen301.studentdb.Student;
+import nz.ac.wgtn.swen301.studentdb.StudentDB;
+
 import java.sql.*;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 
 /**
  * A student manager providing basic CRUD operations for instances of Student, and a read operation for instances of Degree.
@@ -17,6 +23,22 @@ public class StudentManager {
     }
     // DO NOT REMOVE BLOCK ENDS HERE
 
+    // Database connection parameters
+    private static final String DATABASE_URL = "jdbc:derby:memory:studentdb";
+    private static Connection conn;
+    static HashMap<String, Student> students = new HashMap();
+    static HashMap<String, Degree> degrees = new HashMap();
+
+    static {
+        try {
+            conn = DriverManager.getConnection(DATABASE_URL);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
     // THE FOLLOWING METHODS MUST BE IMPLEMENTED :
 
     /**
@@ -28,6 +50,35 @@ public class StudentManager {
      * This functionality is to be tested in nz.ac.wgtn.swen301.assignment1.TestStudentManager::testFetchStudent (followed by optional numbers if multiple tests are used)
      */
     public static Student fetchStudent(String id) throws NoSuchRecordException {
+        if(students.containsKey(id)){
+            return students.get(id);
+        }
+        String sql = "SELECT * FROM students WHERE ID = '" + id + "'";
+        try {
+            Statement stmt = conn.createStatement();
+            // Use stmt to execute a query
+
+            try (ResultSet rs = stmt.executeQuery(sql)) {
+                String sID = null;
+                String sName = null;
+                String sFirstName = null;
+                Degree sDegree = null;
+
+                while (rs.next()) {
+                    sID = rs.getString("id");
+                    sName = rs.getString("name");
+                    sFirstName = rs.getString("first_name");
+                    String degreeID = rs.getString("degree");
+                    sDegree = fetchDegree(degreeID);
+                    Student student = new Student(sID, sName, sFirstName, sDegree);
+                    students.put(sID, student);
+                    return student;
+                }
+            }
+        } catch (SQLException e) {
+            // handle exception
+            throw new NoSuchRecordException();
+        }
         return null;
     }
 
@@ -40,6 +91,30 @@ public class StudentManager {
      * This functionality is to be tested in nz.ac.wgtn.swen301.assignment1.TestStudentManager::testFetchDegree (followed by optional numbers if multiple tests are used)
      */
     public static Degree fetchDegree(String id) throws NoSuchRecordException {
+        if(degrees.containsKey(id)){
+            return degrees.get(id);
+        }
+        String sql = "SELECT * FROM degrees WHERE ID ='"  + id + "'";
+
+        try {
+            Statement stmt = conn.createStatement();
+            // Use stmt to execute a query
+
+            try (ResultSet rs = stmt.executeQuery(sql)) {
+                String dID = null;
+                String dName = null;
+                while (rs.next()) {
+                    dID = rs.getString("id");
+                    dName = rs.getString("name");
+                    Degree degree = new Degree(dID, dName);
+                    degrees.put(dID, degree);
+                    return degree;
+                }
+            }
+        } catch (SQLException e) {
+            // handle exception
+            throw new NoSuchRecordException();
+        }
         return null;
     }
 
@@ -50,7 +125,18 @@ public class StudentManager {
      * @throws NoSuchRecordException if no record corresponding to this student instance exists in the database
      * This functionality is to be tested in nz.ac.wgtn.swen301.assignment1.TestStudentManager::testRemove
      */
-    public static void remove(Student student) throws NoSuchRecordException {}
+    public static void remove(Student student) throws NoSuchRecordException {
+        String sql = "DELETE FROM students WHERE ID = + 'student.id'";
+        try {
+            Statement stmt = conn.createStatement();
+            try (ResultSet rs = stmt.executeQuery(sql)) {
+                students.remove(student.getId());
+            }
+        } catch (SQLException e) {
+            // handle exception
+            throw new NoSuchRecordException();
+        }
+    }
 
     /**
      * Update (synchronize) a student instance with the database.
