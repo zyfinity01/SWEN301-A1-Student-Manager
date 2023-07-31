@@ -80,6 +80,25 @@ public class TestStudentManager {
         assertTrue(!exceptionThrown);
     }
 
+    @Test
+    public void testRemove() throws Exception {
+        boolean noSuchRecordException = false;
+        try {
+            Student student = new StudentManager().fetchStudent("id42");
+            System.out.println("Student id: " + student.getId() + ", name: " + student.getName() + ", degree: " + student.getDegree().getName());
+        } catch (Exception e) {
+            noSuchRecordException = true;
+        }
+        assertTrue(!noSuchRecordException);
+        try {
+            new StudentManager().fetchStudent("id42");
+        } catch (Exception e) {
+            noSuchRecordException = true;
+        }
+        assertTrue(noSuchRecordException);
+    }
+
+
 
     @Test
     public void testPerformance() throws Exception {
