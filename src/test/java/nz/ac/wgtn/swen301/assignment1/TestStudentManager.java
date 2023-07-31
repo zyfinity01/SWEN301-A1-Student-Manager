@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Unit tests for StudentManager, to be extended.
@@ -36,6 +37,19 @@ public class TestStudentManager {
         assertNotNull(student);
     }
 
+    @Test
+    public void testFetchStudent2() throws Exception {
+        boolean noSuchRecordException = false;
+        for(int i = 0; i < 10000; i++){
+            try {
+                Student student = new StudentManager().fetchStudent("id" + i);
+                System.out.println("Student id: " + student.getId() + ", name: " + student.getName() + ", degree: " + student.getDegree().getName());
+            } catch (Exception e){
+                noSuchRecordException = true;
+            }
+        }
+        assertTrue(!noSuchRecordException);
+    }
 
 
     @Test
