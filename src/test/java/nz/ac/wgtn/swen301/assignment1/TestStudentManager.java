@@ -113,6 +113,20 @@ public class TestStudentManager {
         assertEquals("deg5", student.getDegree().getId());
     }
 
+    @Test
+    public void testNewStudent() throws Exception {
+        Student student1 = StudentManager.newStudent("Doe", "John", new StudentManager().fetchDegree("deg5"));
+        Student student2 = new StudentManager().fetchStudent(student1.getId());
+        assertNotNull(student1);
+        assertNotNull(student2);
+        System.out.println("Student1 id: " + student1.getId() + ", name: " + student1.getName() + ", degree: " + student1.getDegree().getName());
+        System.out.println("Student2 id: " + student2.getId() + ", name: " + student2.getName() + ", degree: " + student2.getDegree().getName());
+        assertEquals("John", student2.getFirstName());
+        assertEquals("Doe", student2.getName());
+        assertEquals("deg5", student2.getDegree().getId());
+    }
+
+
 
 
 
