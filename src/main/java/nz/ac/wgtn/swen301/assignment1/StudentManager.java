@@ -6,9 +6,8 @@ import nz.ac.wgtn.swen301.studentdb.Student;
 import nz.ac.wgtn.swen301.studentdb.StudentDB;
 
 import java.sql.*;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * A student manager providing basic CRUD operations for instances of Student, and a read operation for instances of Degree.
@@ -63,7 +62,6 @@ public class StudentManager {
                 String sName = null;
                 String sFirstName = null;
                 Degree sDegree = null;
-
                 while (rs.next()) {
                     sID = rs.getString("id");
                     sName = rs.getString("name");
@@ -95,7 +93,6 @@ public class StudentManager {
             return degrees.get(id);
         }
         String sql = "SELECT * FROM degrees WHERE ID ='"  + id + "'";
-
         try {
             Statement stmt = conn.createStatement();
             // Use stmt to execute a query
@@ -126,17 +123,20 @@ public class StudentManager {
      * This functionality is to be tested in nz.ac.wgtn.swen301.assignment1.TestStudentManager::testRemove
      */
     public static void remove(Student student) throws NoSuchRecordException {
-        String sql = "DELETE FROM students WHERE ID = + 'student.id'";
+        String sql = "DELETE FROM students WHERE ID = '" + student.getId() + "'";
         try {
             Statement stmt = conn.createStatement();
-            try (ResultSet rs = stmt.executeQuery(sql)) {
-                students.remove(student.getId());
+            int affectedRows = stmt.executeUpdate(sql);
+            if (affectedRows == 0) {
+                throw new NoSuchRecordException();
             }
+            students.remove(student.getId());
         } catch (SQLException e) {
             // handle exception
-            throw new NoSuchRecordException();
+            e.printStackTrace();
         }
     }
+
 
     /**
      * Update (synchronize) a student instance with the database.
@@ -148,7 +148,31 @@ public class StudentManager {
      * @throws NoSuchRecordException if no record corresponding to this student instance exists in the database
      * This functionality is to be tested in nz.ac.wgtn.swen301.assignment1.TestStudentManager::testUpdate (followed by optional numbers if multiple tests are used)
      */
-    public static void update(Student student) throws NoSuchRecordException {}
+    public static void update(Student student) throws NoSuchRecordException {
+        String sql = "UPDATE students SET first_name = " + "'" + student.getFirstName() +
+                "', name = '" + student.getName() +
+                "', degree = '" + student.getDegree().getId() +
+                "' WHERE ID = '" + student.getId() + "'";
+        try {
+            Statement stmt = conn.createStatement();
+            int affectedRows = stmt.executeUpdate(sql);
+
+            if (affectedRows == 0) {
+                throw new NoSuchRecordException();
+            }
+
+            // Update the student in the local list as well
+            students.put(student.getId(), student);
+
+        } catch (SQLException e) {
+            // handle exception
+            e.printStackTrace();
+        }
+
+
+
+
+    }
 
 
     /**
@@ -163,7 +187,28 @@ public class StudentManager {
      * This functionality is to be tested in nz.ac.wgtn.swen301.assignment1.TestStudentManager::testNewStudent (followed by optional numbers if multiple tests are used)
      */
     public static Student newStudent(String name,String firstName,Degree degree) {
-        return null;
+        List<Integer> allStudentIds = fetchAllStudentIds().stream()
+                .map(s -> Integer.parseInt(s.replace("id", "")))
+                .collect(Collectors.toList());
+        String newId = "id" + (Collections.max(allStudentIds) + 1);
+        String sql = "INSERT INTO students (id, name, first_name, degree) VALUES ('" + newId + "', '" + name + "', '" + firstName + "', '" + degree.getId() + "')";
+
+        try {
+            Statement stmt = conn.createStatement();
+            stmt.executeUpdate(sql);
+
+            // Create new student instance
+            Student newStudent = new Student(newId, name, firstName, degree);
+
+            // Update the student in the local list as well
+            students.put(newStudent.getId(), newStudent);
+
+            return newStudent;
+        } catch (SQLException e) {
+            // handle exception
+            e.printStackTrace();
+            return null;
+        }
     }
 
     /**
@@ -172,7 +217,19 @@ public class StudentManager {
      * This functionality is to be tested in nz.ac.wgtn.swen301.assignment1.TestStudentManager::testFetchAllStudentIds (followed by optional numbers if multiple tests are used)
      */
     public static Collection<String> fetchAllStudentIds() {
-        return null;
+        String sql = "SELECT id FROM students";
+        HashSet<String> ids = new HashSet<>();
+        try {
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+            while (rs.next()) {
+                ids.add(rs.getString("id"));
+            }
+        } catch (SQLException e) {
+            // handle exception
+            e.printStackTrace();
+        }
+        return ids;
     }
 
 
