@@ -6,6 +6,7 @@ import nz.ac.wgtn.swen301.studentdb.StudentDB;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.Collection;
 import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -124,6 +125,19 @@ public class TestStudentManager {
         assertEquals("John", student2.getFirstName());
         assertEquals("Doe", student2.getName());
         assertEquals("deg5", student2.getDegree().getId());
+    }
+
+    @Test
+    public void testFetchAllStudentIds() throws Exception {
+        Collection<String> studentIds = new StudentManager().fetchAllStudentIds();
+        assertNotNull(studentIds);
+        int i = 0;
+        for(String id : studentIds){
+            System.out.println("Student id: " + id);
+            assert id.startsWith("id");
+            i++;
+        }
+        System.out.println("Total number of student ID's: " + i);
     }
 
 
