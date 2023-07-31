@@ -1,5 +1,6 @@
 package nz.ac.wgtn.swen301.assignment1;
 
+import nz.ac.wgtn.swen301.studentdb.Degree;
 import nz.ac.wgtn.swen301.studentdb.Student;
 import nz.ac.wgtn.swen301.studentdb.StudentDB;
 import org.junit.jupiter.api.BeforeEach;
@@ -50,6 +51,20 @@ public class TestStudentManager {
         }
         assertTrue(!noSuchRecordException);
     }
+
+    @Test
+    public void testFetchDegree() throws Exception {
+        boolean noSuchRecordException = false;
+        try {
+            Degree degree = new StudentManager().fetchDegree("deg5");
+            System.out.println("Degree id:" + degree.getId() + ", name: " + degree.getName());
+
+        } catch(Exception e){
+            noSuchRecordException = true;
+        }
+        assertTrue(!noSuchRecordException);
+    }
+
 
 
     @Test
