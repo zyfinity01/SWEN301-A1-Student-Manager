@@ -66,6 +66,20 @@ public class TestStudentManager {
     }
 
 
+    @Test
+    public void testFetchDegree2() throws Exception {
+        boolean exceptionThrown = false;
+        for(int i = 0; i < 10; i++){
+            try {
+                Degree degree = new StudentManager().fetchDegree("deg" + i);
+                System.out.println("Degree id:" + degree.getId() + ", name: " + degree.getName());
+            } catch(Exception e){
+                exceptionThrown = true;
+            }
+        }
+        assertTrue(!exceptionThrown);
+    }
+
 
     @Test
     public void testPerformance() throws Exception {
