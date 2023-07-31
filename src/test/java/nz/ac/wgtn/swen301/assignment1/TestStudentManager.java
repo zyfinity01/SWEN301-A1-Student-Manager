@@ -32,9 +32,10 @@ public class TestStudentManager {
     @Test
     public void testFetchStudent() throws Exception {
         Student student = new StudentManager().fetchStudent("id42");
+        System.out.println("Student id: " + student.getId() + ", name: " + student.getName() + ", degree: " + student.getDegree().getName());
         assertNotNull(student);
-
     }
+
 
 
     @Test
@@ -75,3 +76,4 @@ public class TestStudentManager {
         System.out.println("Processed " + idQueue.length + " IDs");
     }
 }
+
