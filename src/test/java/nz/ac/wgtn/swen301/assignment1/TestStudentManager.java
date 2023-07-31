@@ -8,8 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Random;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Unit tests for StudentManager, to be extended.
@@ -97,6 +96,23 @@ public class TestStudentManager {
         }
         assertTrue(noSuchRecordException);
     }
+
+    @Test
+    public void testUpdate() throws Exception {
+        Student student = new StudentManager().fetchStudent("id42");
+        System.out.println("Student id: " + student.getId() + ", name: " + student.getName() + ", degree: " + student.getDegree().getName());
+        student.setFirstName("John");
+        student.setName("Doe");
+        student.setDegree(new StudentManager().fetchDegree("deg5"));
+        StudentManager.update(student);
+        student = new StudentManager().fetchStudent("id42");
+        assertNotNull(student);
+        System.out.println("Student id: " + student.getId() + ", name: " + student.getName() + ", degree: " + student.getDegree().getName());
+        assertEquals("John", student.getFirstName());
+        assertEquals("Doe", student.getName());
+        assertEquals("deg5", student.getDegree().getId());
+    }
+
 
 
 
