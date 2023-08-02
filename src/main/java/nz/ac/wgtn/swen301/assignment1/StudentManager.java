@@ -218,7 +218,7 @@ public class StudentManager {
      */
     public static Collection<String> fetchAllStudentIds() {
         String sql = "SELECT id FROM students";
-        HashSet<String> ids = new HashSet<>();
+        ArrayList<String> ids = new ArrayList<>();
         try {
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(sql);
@@ -229,6 +229,14 @@ public class StudentManager {
             // handle exception
             e.printStackTrace();
         }
+        Collections.sort(ids, new Comparator<String>() {
+            @Override
+            public int compare(String o1, String o2) {
+                Integer id1 = Integer.parseInt(o1.substring(2));
+                Integer id2 = Integer.parseInt(o2.substring(2));
+                return id1.compareTo(id2);
+            }
+        });
         return ids;
     }
 
