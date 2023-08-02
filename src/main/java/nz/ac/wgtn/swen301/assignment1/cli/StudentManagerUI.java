@@ -5,6 +5,10 @@ import nz.ac.wgtn.swen301.studentdb.NoSuchRecordException;
 import nz.ac.wgtn.swen301.studentdb.Student;
 import org.apache.commons.cli.*;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -62,8 +66,8 @@ public class StudentManagerUI {
         if (cmd.hasOption("fetchone")) {
             String studentId = cmd.getOptionValue("fetchone");
             try {
-                Student student = StudentManager.fetchStudent(studentId);
-                System.out.println("Student ID: " + student.getId() + "First Name: " + student.getFirstName() + "Last Name: " + student.getName() + "Degree: " + student.getDegree().getName());
+                Student student = StudentManager.fetchStudent("id" + studentId);
+                System.out.println("Student ID: " + student.getId() + " First Name: " + student.getFirstName() + " Last Name: " + student.getName() + " Degree: " + student.getDegree().getName());
             } catch (NoSuchRecordException e){
             }
             // Fetch and print student record with id = studentId
@@ -71,25 +75,31 @@ public class StudentManagerUI {
             try {
                 ArrayList<String> studentIdsList = new ArrayList<>(StudentManager.fetchAllStudentIds());
 
-                Collections.sort(studentIdsList, new Comparator<String>() {
-                    @Override
-                    public int compare(String o1, String o2) {
-                        Integer id1 = Integer.parseInt(o1.substring(2));
-                        Integer id2 = Integer.parseInt(o2.substring(2));
-                        return id1.compareTo(id2);
-                    }
-                });
                 for(String id : studentIdsList) {
                     Student student = StudentManager.fetchStudent(id);
-                    System.out.println("Student ID: " + student.getId() + "First Name: " + student.getFirstName() + "Last Name: " + student.getName() + "Degree: " + student.getDegree().getName());
+                    System.out.println("Student ID: " + student.getId() + " First Name: " + student.getFirstName() + " Last Name: " + student.getName() + " Degree: " + student.getDegree().getName());
                 }
             } catch (NoSuchRecordException e){
             }
             // Fetch and print all student records
         } else if (cmd.hasOption("export")) {
             if (cmd.hasOption("f")) {
-                String fileName = cmd.getOptionValue("f");
-                // Fetch all student records and write them to file with name = fileName
+                String fileName = cmd.getOptionValue("f") + ".csv";
+                try {
+                    ArrayList<String> studentIdsList = new ArrayList<>(StudentManager.fetchAllStudentIds());
+                    try {
+                        BufferedWriter writer = new BufferedWriter(new FileWriter(fileName));
+                        for (String studentId : studentIdsList) {
+                            Student student = StudentManager.fetchStudent(studentId);
+                            writer.write(student.getId() + "," + student.getName() + "," + student.getFirstName() + "," + student.getDegree().getName());
+                            writer.newLine();
+                        }
+                        writer.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                } catch (NoSuchRecordException e) {
+                }
             } else {
                 System.out.println("The -export option requires the -f <file> option");
                 formatter.printHelp("utility-name", options);
