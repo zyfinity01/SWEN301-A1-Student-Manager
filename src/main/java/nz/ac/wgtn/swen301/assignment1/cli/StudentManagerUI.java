@@ -89,6 +89,7 @@ public class StudentManagerUI {
                     ArrayList<String> studentIdsList = new ArrayList<>(StudentManager.fetchAllStudentIds());
                     try {
                         BufferedWriter writer = new BufferedWriter(new FileWriter(fileName));
+                        writer.write("id,name,firstname,degree");
                         for (String studentId : studentIdsList) {
                             Student student = StudentManager.fetchStudent(studentId);
                             writer.write(student.getId() + "," + student.getName() + "," + student.getFirstName() + "," + student.getDegree().getName());
