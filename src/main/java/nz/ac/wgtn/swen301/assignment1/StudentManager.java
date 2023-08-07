@@ -69,15 +69,16 @@ public class StudentManager {
                     String degreeID = rs.getString("degree");
                     sDegree = fetchDegree(degreeID);
                     Student student = new Student(sID, sName, sFirstName, sDegree);
+                    if (student == null) throw new NoSuchRecordException();
                     students.put(sID, student);
                     return student;
                 }
+                throw new NoSuchRecordException("Record not found");
             }
         } catch (SQLException e) {
             // handle exception
             throw new NoSuchRecordException();
         }
-        return null;
     }
 
     /**
@@ -104,15 +105,16 @@ public class StudentManager {
                     dID = rs.getString("id");
                     dName = rs.getString("name");
                     Degree degree = new Degree(dID, dName);
+                    if (degree == null) throw new NoSuchRecordException();
                     degrees.put(dID, degree);
                     return degree;
                 }
+                throw new NoSuchRecordException();
             }
         } catch (SQLException e) {
             // handle exception
             throw new NoSuchRecordException();
         }
-        return null;
     }
 
     /**

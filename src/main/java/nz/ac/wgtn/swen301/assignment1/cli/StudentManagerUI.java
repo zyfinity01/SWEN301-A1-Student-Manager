@@ -69,6 +69,7 @@ public class StudentManagerUI {
                 Student student = StudentManager.fetchStudent("id" + studentId);
                 System.out.println("Student ID: " + student.getId() + " First Name: " + student.getFirstName() + " Last Name: " + student.getName() + " Degree: " + student.getDegree().getName());
             } catch (NoSuchRecordException e){
+                System.out.println("No student with id " + studentId + " found");
             }
             // Fetch and print student record with id = studentId
         } else if (cmd.hasOption("fetchall")) {
@@ -80,6 +81,8 @@ public class StudentManagerUI {
                     System.out.println("Student ID: " + student.getId() + " First Name: " + student.getFirstName() + " Last Name: " + student.getName() + " Degree: " + student.getDegree().getName());
                 }
             } catch (NoSuchRecordException e){
+                System.out.println("No such records found");
+
             }
             // Fetch and print all student records
         } else if (cmd.hasOption("export")) {
@@ -100,6 +103,7 @@ public class StudentManagerUI {
                         e.printStackTrace();
                     }
                 } catch (NoSuchRecordException e) {
+                    System.out.println("No such records found");
                 }
             } else {
                 System.out.println("The -export option requires the -f <file> option");
