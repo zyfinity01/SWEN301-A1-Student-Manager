@@ -83,13 +83,15 @@ public class TestStudentManager {
     @Test
     public void testRemove() throws Exception {
         boolean noSuchRecordException = false;
+        Student student = null;
         try {
-            Student student = new StudentManager().fetchStudent("id42");
+            student = new StudentManager().fetchStudent("id42");
             System.out.println("Student id: " + student.getId() + ", name: " + student.getName() + ", degree: " + student.getDegree().getName());
         } catch (Exception e) {
             noSuchRecordException = true;
         }
         assertTrue(!noSuchRecordException);
+        StudentManager.remove(student);
         try {
             new StudentManager().fetchStudent("id42");
         } catch (Exception e) {
