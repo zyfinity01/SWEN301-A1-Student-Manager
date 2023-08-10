@@ -148,40 +148,46 @@ public class TestStudentManager {
 
     @Test
     public void testPerformance() throws Exception {
-        int x = 250; // replace with desired amount of IDs
-        String[] studentIds = new String[x];
-        String[] degreeIds = new String[x];
-        String[] idQueue = new String[2*x]; // twice the size to hold both student and degree ids
+        int x = 250; // Number of students and degrees (half of total entities)
+        long durationInSeconds = 5;
+        long endTime = System.currentTimeMillis() + (durationInSeconds * 1000);
 
-        Random rand = new Random();
-        for(int i=0; i<x; i++){
-            int randomStudentNum = rand.nextInt(10000); // numbers 0-9999
-            int randomDegreeNum = rand.nextInt(10); // numbers 0-9
+        int totalProcessed = 0;
 
-            studentIds[i] = "id" + randomStudentNum;
-            degreeIds[i] = "deg" + randomDegreeNum;
-        }
+        while (System.currentTimeMillis() < endTime) {
+            String[] studentIds = new String[x];
+            String[] degreeIds = new String[x];
+            String[] idQueue = new String[2 * x]; // Twice the size to hold both student and degree ids
 
-        // Merge into idQueue
-        for(int i=0; i<x; i++){
-            idQueue[i*2] = studentIds[i]; // Even index for studentIds
-            idQueue[i*2 + 1] = degreeIds[i]; // Odd index for degreeIds
-        }
+            Random rand = new Random();
+            for (int i = 0; i < x; i++) {
+                int randomStudentNum = rand.nextInt(10000); // Numbers 0-9999
+                int randomDegreeNum = rand.nextInt(10); // Numbers 0-9
 
-        long start = System.currentTimeMillis();
-
-        for (String str : idQueue) {
-            if (str.startsWith("id")) {
-                StudentManager.fetchStudent(str);
-            } else {
-                StudentManager.fetchDegree(str);
-
+                studentIds[i] = "id" + randomStudentNum;
+                degreeIds[i] = "deg" + randomDegreeNum;
             }
+
+            // Merge into idQueue
+            for (int i = 0; i < x; i++) {
+                idQueue[i * 2] = studentIds[i]; // Even index for studentIds
+                idQueue[i * 2 + 1] = degreeIds[i]; // Odd index for degreeIds
+            }
+
+            for (String str : idQueue) {
+                if (str.startsWith("id")) {
+                    StudentManager.fetchStudent(str);
+                } else {
+                    StudentManager.fetchDegree(str);
+                }
+            }
+            totalProcessed += idQueue.length;
         }
-        long finish = System.currentTimeMillis();
-        long timeElapsed = finish - start;
-        System.out.println("Time elapsed: " + timeElapsed + "ms");
-        System.out.println("Processed " + idQueue.length + " IDs");
+
+        long actualDurationInSeconds = (System.currentTimeMillis() - (endTime - durationInSeconds * 1000)) / 1000;
+        System.out.println("Processed " + totalProcessed + " IDs over " + actualDurationInSeconds + " seconds");
+        System.out.println("Average queries per second: " + (double) totalProcessed / actualDurationInSeconds);
     }
+
 }
 
