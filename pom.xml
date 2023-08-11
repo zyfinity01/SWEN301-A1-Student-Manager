@@ -8,6 +8,7 @@
     <name>swen301-assignment1</name>
     <url>http://maven.apache.org</url>
     <build>
+        <finalName>studentfinder</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
