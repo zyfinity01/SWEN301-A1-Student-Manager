@@ -155,13 +155,13 @@ public class StudentManager {
      * This functionality is to be tested in nz.ac.wgtn.swen301.assignment1.TestStudentManager::testUpdate (followed by optional numbers if multiple tests are used)
      */
     public static void update(Student student) throws NoSuchRecordException {
-        String sql = "UPDATE students SET first_name = ?, name = ?, degree = ? WHERE ID = ?"; // Use placeholders
+        String sql = "UPDATE students SET first_name = ?, name = ?, degree = ? WHERE ID = ?";
         try {
-            PreparedStatement pstmt = conn.prepareStatement(sql); // Use PreparedStatement
-            pstmt.setString(1, student.getFirstName()); // Bind the first_name value
-            pstmt.setString(2, student.getName()); // Bind the name value
-            pstmt.setString(3, student.getDegree().getId()); // Bind the degree value
-            pstmt.setString(4, student.getId()); // Bind the ID value
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, student.getFirstName());
+            pstmt.setString(2, student.getName());
+            pstmt.setString(3, student.getDegree().getId());
+            pstmt.setString(4, student.getId());
 
             int affectedRows = pstmt.executeUpdate();
 
@@ -196,14 +196,14 @@ public class StudentManager {
                 .map(s -> Integer.parseInt(s.replace("id", "")))
                 .collect(Collectors.toList());
         String newId = "id" + (Collections.max(allStudentIds) + 1);
-        String sql = "INSERT INTO students (id, name, first_name, degree) VALUES (?, ?, ?, ?)"; // Use placeholders
+        String sql = "INSERT INTO students (id, name, first_name, degree) VALUES (?, ?, ?, ?)";
 
         try {
-            PreparedStatement pstmt = conn.prepareStatement(sql); // Use PreparedStatement
-            pstmt.setString(1, newId); // Bind the newId value
-            pstmt.setString(2, name); // Bind the name value
-            pstmt.setString(3, firstName); // Bind the firstName value
-            pstmt.setString(4, degree.getId()); // Bind the degree value
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, newId);
+            pstmt.setString(2, name);
+            pstmt.setString(3, firstName);
+            pstmt.setString(4, degree.getId());
 
             pstmt.executeUpdate();
 
@@ -231,8 +231,8 @@ public class StudentManager {
         String sql = "SELECT id FROM students";
         ArrayList<String> ids = new ArrayList<>();
         try {
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery(sql);
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            ResultSet rs = pstmt.executeQuery();
             while (rs.next()) {
                 ids.add(rs.getString("id"));
             }
@@ -250,6 +250,7 @@ public class StudentManager {
         });
         return ids;
     }
+
 
 
 
