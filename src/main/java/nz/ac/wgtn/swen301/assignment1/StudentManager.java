@@ -52,10 +52,10 @@ public class StudentManager {
         if (students.containsKey(id)) {
             return students.get(id);
         }
-        String sql = "SELECT * FROM students WHERE ID = ?"; // Use a placeholder
+        String sql = "SELECT * FROM students WHERE ID = ?";
         try {
-            PreparedStatement pstmt = conn.prepareStatement(sql); // Use PreparedStatement
-            pstmt.setString(1, id); // Bind the id value to the placeholder
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, id);
 
             try (ResultSet rs = pstmt.executeQuery()) {
                 String sID = null;
@@ -94,10 +94,10 @@ public class StudentManager {
         if (degrees.containsKey(id)) {
             return degrees.get(id);
         }
-        String sql = "SELECT * FROM degrees WHERE ID = ?"; // Use a placeholder
+        String sql = "SELECT * FROM degrees WHERE ID = ?";
         try {
-            PreparedStatement pstmt = conn.prepareStatement(sql); // Use PreparedStatement
-            pstmt.setString(1, id); // Bind the id value to the placeholder
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, id);
 
             try (ResultSet rs = pstmt.executeQuery()) {
                 String dID = null;
@@ -127,10 +127,12 @@ public class StudentManager {
      * This functionality is to be tested in nz.ac.wgtn.swen301.assignment1.TestStudentManager::testRemove
      */
     public static void remove(Student student) throws NoSuchRecordException {
-        String sql = "DELETE FROM students WHERE ID = '" + student.getId() + "'";
+        String sql = "DELETE FROM students WHERE ID = ?";
         try {
-            Statement stmt = conn.createStatement();
-            int affectedRows = stmt.executeUpdate(sql);
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, student.getId());
+
+            int affectedRows = pstmt.executeUpdate();
             if (affectedRows == 0) {
                 throw new NoSuchRecordException();
             }
