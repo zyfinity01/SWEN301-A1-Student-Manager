@@ -49,15 +49,15 @@ public class StudentManager {
      * This functionality is to be tested in nz.ac.wgtn.swen301.assignment1.TestStudentManager::testFetchStudent (followed by optional numbers if multiple tests are used)
      */
     public static Student fetchStudent(String id) throws NoSuchRecordException {
-        if(students.containsKey(id)){
+        if (students.containsKey(id)) {
             return students.get(id);
         }
-        String sql = "SELECT * FROM students WHERE ID = '" + id + "'";
+        String sql = "SELECT * FROM students WHERE ID = ?"; // Use a placeholder
         try {
-            Statement stmt = conn.createStatement();
-            // Use stmt to execute a query
+            PreparedStatement pstmt = conn.prepareStatement(sql); // Use PreparedStatement
+            pstmt.setString(1, id); // Bind the id value to the placeholder
 
-            try (ResultSet rs = stmt.executeQuery(sql)) {
+            try (ResultSet rs = pstmt.executeQuery()) {
                 String sID = null;
                 String sName = null;
                 String sFirstName = null;
@@ -80,6 +80,7 @@ public class StudentManager {
             throw new NoSuchRecordException();
         }
     }
+
 
     /**
      * Return a degree instance with values from the row with the respective id in the database.
