@@ -155,13 +155,15 @@ public class StudentManager {
      * This functionality is to be tested in nz.ac.wgtn.swen301.assignment1.TestStudentManager::testUpdate (followed by optional numbers if multiple tests are used)
      */
     public static void update(Student student) throws NoSuchRecordException {
-        String sql = "UPDATE students SET first_name = " + "'" + student.getFirstName() +
-                "', name = '" + student.getName() +
-                "', degree = '" + student.getDegree().getId() +
-                "' WHERE ID = '" + student.getId() + "'";
+        String sql = "UPDATE students SET first_name = ?, name = ?, degree = ? WHERE ID = ?"; // Use placeholders
         try {
-            Statement stmt = conn.createStatement();
-            int affectedRows = stmt.executeUpdate(sql);
+            PreparedStatement pstmt = conn.prepareStatement(sql); // Use PreparedStatement
+            pstmt.setString(1, student.getFirstName()); // Bind the first_name value
+            pstmt.setString(2, student.getName()); // Bind the name value
+            pstmt.setString(3, student.getDegree().getId()); // Bind the degree value
+            pstmt.setString(4, student.getId()); // Bind the ID value
+
+            int affectedRows = pstmt.executeUpdate();
 
             if (affectedRows == 0) {
                 throw new NoSuchRecordException();
@@ -174,11 +176,8 @@ public class StudentManager {
             // handle exception
             e.printStackTrace();
         }
-
-
-
-
     }
+
 
 
     /**
