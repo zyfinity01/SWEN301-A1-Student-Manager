@@ -191,16 +191,21 @@ public class StudentManager {
      * @return a freshly created student instance
      * This functionality is to be tested in nz.ac.wgtn.swen301.assignment1.TestStudentManager::testNewStudent (followed by optional numbers if multiple tests are used)
      */
-    public static Student newStudent(String name,String firstName,Degree degree) {
+    public static Student newStudent(String name, String firstName, Degree degree) {
         List<Integer> allStudentIds = fetchAllStudentIds().stream()
                 .map(s -> Integer.parseInt(s.replace("id", "")))
                 .collect(Collectors.toList());
         String newId = "id" + (Collections.max(allStudentIds) + 1);
-        String sql = "INSERT INTO students (id, name, first_name, degree) VALUES ('" + newId + "', '" + name + "', '" + firstName + "', '" + degree.getId() + "')";
+        String sql = "INSERT INTO students (id, name, first_name, degree) VALUES (?, ?, ?, ?)"; // Use placeholders
 
         try {
-            Statement stmt = conn.createStatement();
-            stmt.executeUpdate(sql);
+            PreparedStatement pstmt = conn.prepareStatement(sql); // Use PreparedStatement
+            pstmt.setString(1, newId); // Bind the newId value
+            pstmt.setString(2, name); // Bind the name value
+            pstmt.setString(3, firstName); // Bind the firstName value
+            pstmt.setString(4, degree.getId()); // Bind the degree value
+
+            pstmt.executeUpdate();
 
             // Create new student instance
             Student newStudent = new Student(newId, name, firstName, degree);
@@ -215,6 +220,7 @@ public class StudentManager {
             return null;
         }
     }
+
 
     /**
      * Get all student ids currently being used in the database.
